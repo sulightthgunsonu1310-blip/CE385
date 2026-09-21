@@ -2,10 +2,8 @@ import express from "express";
 
 const app = express();
 
-// รองรับการอ่านข้อมูลแบบ JSON จาก Request Body
 app.use(express.json());
 
-// ข้อมูลจำลอง
 const TODOS = [
     { id: "1", title: "อ่านสไลด์สัปดาห์ที่ 5", done: true, priority: "high" },
     { id: "2", title: "ติดตั้ง Express", done: true, priority: "high" },
@@ -15,7 +13,6 @@ const TODOS = [
 
 const PRIORITIES = ["high", "normal", "low"];
 
-// Middleware ตรวจสอบความถูกต้องของข้อมูลก่อนสร้าง Todo
 function validateTodo(req, res, next) {
     const { title, priority } = req.body ?? {};
 
@@ -30,15 +27,12 @@ function validateTodo(req, res, next) {
     return next();
 }
 
-// สร้าง Express Router
 const todoRouter = express.Router();
 
-// 1. GET /api/v1/todos - ดึงรายการทั้งหมด
 todoRouter.get("/", (req, res) => {
     res.json(TODOS.map((t) => ({ ...t })));
 });
 
-// 2. GET /api/v1/todos/:id - ดึงรายการเฉพาะตาม ID
 todoRouter.get("/:id", (req, res) => {
     const todo = TODOS.find((t) => t.id === req.params.id);
 
@@ -49,7 +43,6 @@ todoRouter.get("/:id", (req, res) => {
     return res.status(200).json({ ...todo });
 });
 
-// 3. POST /api/v1/todos - เพิ่มรายการใหม่
 todoRouter.post("/", validateTodo, (req, res) => {
     const created = {
         id: String(TODOS.length + 1),
@@ -61,10 +54,9 @@ todoRouter.post("/", validateTodo, (req, res) => {
     res.status(201).json(created);
 });
 
-// นำ Router มาใช้กับ Base Path /api/v1/todos
+
 app.use("/api/v1/todos", todoRouter);
 
-// เริ่มต้นรันเซิร์ฟเวอร์
 app.listen(3000, () => {
     console.log(`เซิร์ฟเวอร์ทำงานที่ http://localhost:3000`);
 });
